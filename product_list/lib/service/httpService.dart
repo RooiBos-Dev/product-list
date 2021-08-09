@@ -11,40 +11,29 @@ class HttpService {
   const HttpService();
 
   Future<User> login(String? username, String? password) async {
-    final json = {
-      'username': 'Ryan',
-      'password': 'h*AHRiUC5pnM#M',
-      'session-id': '7e4bf2ac-87b5-52d7-f817-4299a65a8432'
-    };
-    final user = User.fromJson(json);
+    final result = await http.post(
+      Uri.parse('http://kazang-test.getsandbox.com/users/login'),
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origon": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow_Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+        "Acess-Control-Allow-Credentials": "true",
+      },
+      body: jsonEncode({'username': username, 'password': password}),
+    );
 
-    return user;
+    if (result.statusCode == 200) {
+      final json = jsonDecode(result.body);
+      final user = User.fromJson(json);
 
-    // final result = await http.post(
-    //   Uri.parse('http://kazang-test.getsandbox.com/users/login'),
-    //   headers: {
-    //     "Accept": "application/json",
-    //     "Content-Type": "application/json",
-    //     "Access-Control-Allow-Origon": "*",
-    //     "Access-Control-Allow-Headers": "Content-Type",
-    //     "Access-Control-Allow_Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-    //     "Acess-Control-Allow-Credentials": "true",
-    //   },
-    //   body: jsonEncode({'username': username, 'password': password}),
-    // );
-
-    // if (result.statusCode == 200) {
-    //   final json = jsonDecode(result.body);
-    //   final user = User.fromJson(json);
-
-    //   return user;
-    // } else if (result.statusCode == 504) {
-
-    // } else {
-    //   final json = jsonDecode(result.body);
-    //   throw GeneralException(
-    //       message: '${json['statusCode']}: ${json['title']}');
-    // }
+      return user;
+    } else {
+      final json = jsonDecode(result.body);
+      throw GeneralException(
+          message: '${json['statusCode']}: ${json['title']}');
+    }
   }
 
   Future<User> register(String? username, String? password) async {
