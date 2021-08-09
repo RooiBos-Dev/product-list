@@ -31,8 +31,7 @@ class HttpService {
       return user;
     } else {
       final json = jsonDecode(result.body);
-      throw GeneralException(
-          message: '${json['statusCode']}: ${json['title']}');
+      throw Exception('${json['statusCode']}: ${json['title']}');
     }
   }
 
